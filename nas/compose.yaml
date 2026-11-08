@@ -1,0 +1,25 @@
+# Eraser on TrueNAS SCALE, from the prebuilt image (no Go build on the NAS).
+#
+#   docker compose pull && docker compose up -d
+#   docker compose run --rm eraser send --dry-run
+#
+# Reach the UI from your PC through an SSH tunnel, never by opening the port:
+#   ssh -L 8080:127.0.0.1:8080 <user>@<nas>   then open http://127.0.0.1:8080
+services:
+  eraser:
+    image: ghcr.io/maxmoffa/eraser:latest
+    container_name: eraser
+    # 127.0.0.1 only: the web UI has no login and holds your mail credentials.
+    # "8080:8080" would let anyone on your LAN send email in your name.
+    ports:
+      - "127.0.0.1:8080:8080"
+    volumes:
+      - eraser-data:/home/eraser/.eraser
+    shm_size: "1gb"
+    environment:
+      TZ: Europe/Rome
+    restart: unless-stopped
+
+volumes:
+  eraser-data:
+    name: eraser-data
